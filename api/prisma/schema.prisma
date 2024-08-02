@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  email           String           @unique
+  fname           String
+  sname           String
+  password        String
+  profilePicture  String?
+  bannerImage     String?
+  createdAt       DateTime         @default(now())
+  socialLinks     SocialLink[]
+  experiences     Experience[]
+  projects        Project[]
+  achievements    Achievement[]
+  certifications  Certification[]
+  ranking         Ranking?
+}
+
+model SocialLink {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  platform  String
+  url       String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  company     String
+  designation String
+  startDate   DateTime
+  endDate     DateTime?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  description String
+  url         String?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Achievement {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  name        String
+  year        Int
+  details     String?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Certification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  name        String
+  authority   String
+  issueDate   DateTime
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Ranking {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  points      Int
+  user        User     @relation(fields: [userId], references: [id])
+}
